@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "hydra.samsung.sm-x400.kiosk",
+  "optional": true,
+  "cockpitUri": "http://127.0.0.1:8787/",
+  "actions": {
+    "cockpit": "art.eggiebagelface.hydra.action.OPEN_COCKPIT",
+    "termux": "art.eggiebagelface.hydra.action.OPEN_TERMUX",
+    "shizuku": "art.eggiebagelface.hydra.action.OPEN_SHIZUKU",
+    "termuxX11": "art.eggiebagelface.hydra.action.OPEN_TERMUX_X11"
+  },
+  "packages": {
+    "termux": "com.termux",
+    "shizuku": "moe.shizuku.privileged.api",
+    "termuxX11": "com.termux.x11"
+  },
+  "security": {
+    "shellExecution": false,
+    "rootBroker": false,
+    "shizukuBroker": false,
+    "loopbackCockpit": true
+  }
+}
