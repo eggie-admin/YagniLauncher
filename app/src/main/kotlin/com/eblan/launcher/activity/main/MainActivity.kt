@@ -60,6 +60,7 @@ import com.eblan.launcher.ui.local.LocalPinItemRequest
 import com.eblan.launcher.ui.local.LocalSettings
 import com.eblan.launcher.ui.local.LocalUserManager
 import com.eblan.launcher.ui.local.LocalWallpaperManager
+import com.eblan.launcher.util.HydraSamsungContract
 import com.eblan.launcher.util.handleEdgeToEdge
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -111,6 +112,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleHydraSamsungAction(intent)
 
         setContent {
             CompositionLocalProvider(
@@ -161,6 +163,34 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleHydraSamsungAction(intent)
+    }
+
+    private fun handleHydraSamsungAction(source: Intent?) {
+        val handled = when (source?.action) {
+            HydraSamsungContract.ACTION_OPEN_COCKPIT -> {
+                runCatching { startActivity(HydraSamsungContract.cockpitIntent()) }.isSuccess
+            }
+
+            HydraSamsungContract.ACTION_OPEN_TERMUX -> launchPackage(HydraSamsungContract.TERMUX_PACKAGE)
+            HydraSamsungContract.ACTION_OPEN_SHIZUKU -> launchPackage(HydraSamsungContract.SHIZUKU_PACKAGE)
+            HydraSamsungContract.ACTION_OPEN_TERMUX_X11 -> launchPackage(HydraSamsungContract.TERMUX_X11_PACKAGE)
+            else -> false
+        }
+
+        if (handled) {
+            source?.action = Intent.ACTION_MAIN
+        }
+    }
+
+    private fun launchPackage(packageName: String): Boolean {
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName) ?: return false
+        return runCatching { startActivity(launchIntent) }.isSuccess
     }
 
     @Suppress("DEPRECATION")
